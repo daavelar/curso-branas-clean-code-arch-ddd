@@ -1,54 +1,94 @@
 <?php
-require_once 'validateCpf.php';
 
-function signup($input) {
-    try {
-        $conn = new PDO("mysql:host=localhost;dbname=cccat15", "root", "q1w2r4e3");
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+const INVALID_CPF = -1;
+const INVALID_EMAIL = -2;
+const INVALID_NAME = -3;
+const EMAIL_ALREADY_EXISTS = -4;
+const INVALID_CAR_PLATE = -5;
 
-        $id = bin2hex(random_bytes(16));
+function signup($input)
+{
+    $conn = connectToMysql();
 
-        $stmt = $conn->prepare("SELECT * FROM cccat15.account WHERE email = :email");
-        $stmt->execute(['email' => $input['email']]);
-        $acc = $stmt->fetch();
+    $id = generateId();
 
-        if (!$acc) {
-            if (preg_match("/[a-zA-Z] [a-zA-Z]+/", $input['name'])) {
-                if (filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
-                    if (validateCpf($input['cpf'])) {
-                        $isDriver = $input['isDriver'] ? true : false;
-                        $isPassenger = isset($input['isPassenger']) ? $input['isPassenger'] : false;
-
-                        if ($isDriver && !preg_match("/[A-Z]{3}[0-9]{4}/", $input['carPlate'])) {
-                            return -5;
-                        }
-
-                        $stmt = $conn->prepare("INSERT INTO cccat15.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([$id, $input['name'], $input['email'], $input['cpf'], $input['carPlate'], $isPassenger, $isDriver]);
-
-                        return ['accountId' => $id];
-                    } else {
-                        // CPF inválido
-                        return -1;
-                    }
-                } else {
-                    // Email inválido
-                    return -2;
-                }
-            } else {
-                // Nome inválido
-                return -3;
-            }
-        } else {
-            // Já existe
-            return -4;
-        }
-    } catch (PDOException $e) {
-        // Tratar exceção
-    } finally {
-        if (isset($conn)) {
-            $conn = null; // Fecha a conexão com o banco
-        }
+    if (emailAlreadyExists($conn, $input['email'])) {
+        return EMAIL_ALREADY_EXISTS;
     }
+    if (!nameIsValid($input['name'])) {
+        return INVALID_NAME;
+    }
+    if (!emailIsValid($input['email'])) {
+        return INVALID_EMAIL;
+    }
+    if (!cpfIsValid($input['cpf'])) {
+        return INVALID_CPF;
+    }
+    if (!carPlateIsValid($input['carPlate'])) {
+        return INVALID_CAR_PLATE;
+    }
+
+    createUser($conn, [
+        'id' => $id,
+        'name' => $input['name'],
+        'email' => $input['email'],
+        'cpf' => $input['cpf'],
+        'carPlate' => $input['carPlate'],
+        'isPassenger' => $input['isPassenger'] ?? false,
+        'isDriver' => $input['isDriver'] ? true : false,
+    ]);
+
+    return ['accountId' => $id];
 }
-?>
+
+function createUser($conn, $user)
+{
+    $stmt = $conn->prepare(
+        "INSERT INTO account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->execute([
+        $user['id'],
+        $user['name'],
+        $user['email'],
+        $user['cpf'],
+        $user['carPlate'],
+        $user['isPassenger'],
+        $user['isDriver']
+    ]);
+}
+
+function carPlateIsValid($carPlate): bool
+{
+    return preg_match("/[A-Z]{3}[0-9]{4}/", $carPlate);
+}
+
+function emailIsValid($email): mixed
+{
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function nameIsValid($name): bool
+{
+    return preg_match("/[a-zA-Z] [a-zA-Z]+/", $name);
+}
+
+function emailAlreadyExists(PDO $conn, string $email): bool
+{
+    $stmt = $conn->prepare("SELECT * FROM cccat15.account WHERE email = :email");
+    $stmt->execute(['email' => $email]);
+
+    return (bool)$stmt->fetch();
+}
+
+function generateId(): string
+{
+    return bin2hex(random_bytes(16));
+}
+
+function connectToMysql(): PDO
+{
+    $conn = new PDO("mysql:host=localhost;dbname=cccat15", "root", "q1w2r4e3");
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    return $conn;
+}

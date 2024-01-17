@@ -1,12 +1,14 @@
 {
   "name": "diego/signup-refactoring",
   "autoload": {
-    "psr-4": {
-      "Diego\\SignupRefactoring\\": "src/"
-    }
+    "files": [
+      "src/signup.php",
+      "src/getAccount.php",
+      "src/validateCpf.php"
+    ]
   },
   "autoload-dev": {
-    "Tests": "tests/"
+    "Tests\\": "tests/"
   },
   "authors": [
     {

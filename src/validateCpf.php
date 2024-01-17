@@ -2,7 +2,7 @@
 
 const CPF_LENGTH = 11;
 
-function validateCpf($rawCpf)
+function cpfIsValid($rawCpf)
 {
     if (!$rawCpf) {
         return false;
