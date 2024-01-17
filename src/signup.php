@@ -52,8 +52,8 @@ function createUser($conn, $user)
         $user['email'],
         $user['cpf'],
         $user['carPlate'],
-        $user['isPassenger'],
-        $user['isDriver']
+        intval($user['isPassenger']),
+        intval($user['isDriver'])
     ]);
 }
 

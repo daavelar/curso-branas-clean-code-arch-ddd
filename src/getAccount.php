@@ -6,7 +6,5 @@ function getAccount($id)
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $stmt = $conn->prepare("SELECT * FROM account WHERE account_id = :id");
     $stmt->execute(['id' => $id]);
-    $acc = $stmt->fetch();
-
-    return $acc;
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
