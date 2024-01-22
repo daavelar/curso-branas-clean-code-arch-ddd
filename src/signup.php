@@ -84,11 +84,3 @@ function generateId(): string
 {
     return bin2hex(random_bytes(16));
 }
-
-function connectToMysql(): PDO
-{
-    $conn = new PDO("mysql:host=localhost;dbname=cccat15", "root", "q1w2r4e3");
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    return $conn;
-}

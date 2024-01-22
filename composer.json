@@ -4,7 +4,8 @@
     "files": [
       "src/signup.php",
       "src/getAccount.php",
-      "src/validateCpf.php"
+      "src/validateCpf.php",
+      "src/database.php"
     ]
   },
   "autoload-dev": {

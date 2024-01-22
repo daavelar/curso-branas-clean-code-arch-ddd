@@ -2,7 +2,7 @@
 
 const CPF_LENGTH = 11;
 
-function cpfIsValid($rawCpf)
+function cpfIsValid($rawCpf): bool
 {
     if (!$rawCpf) {
         return false;
@@ -21,23 +21,23 @@ function cpfIsValid($rawCpf)
     return extractDigit($cpf) === "{$digit1}{$digit2}";
 }
 
-function removeNonDigits($cpf)
+function removeNonDigits($cpf): string
 {
     return preg_replace('/\D/', '', $cpf);
 }
 
-function isInvalidLength($cpf)
+function isInvalidLength($cpf): bool
 {
     return strlen($cpf) !== CPF_LENGTH;
 }
 
-function hasAllDigitsEqual($cpf)
+function hasAllDigitsEqual($cpf): bool
 {
     $firstCpfDigit = $cpf[0];
     return str_split($cpf) === array_fill(0, strlen($cpf), $firstCpfDigit);
 }
 
-function calculateDigit($cpf, $factor)
+function calculateDigit($cpf, $factor): string
 {
     $total = 0;
     for ($i = 0; $i < strlen($cpf); $i++) {
@@ -49,7 +49,7 @@ function calculateDigit($cpf, $factor)
     return ($rest < 2) ? 0 : 11 - $rest;
 }
 
-function extractDigit($cpf)
+function extractDigit($cpf): string
 {
     return substr($cpf, 9);
 }
