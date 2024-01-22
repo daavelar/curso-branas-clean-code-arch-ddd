@@ -41,7 +41,7 @@ function signup($input)
     return ['accountId' => $id];
 }
 
-function createUser($conn, $user)
+function createUser($conn, $user): void
 {
     $stmt = $conn->prepare(
         "INSERT INTO account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) VALUES (?, ?, ?, ?, ?, ?, ?)"

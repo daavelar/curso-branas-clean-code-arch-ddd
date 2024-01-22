@@ -8,7 +8,9 @@
     ]
   },
   "autoload-dev": {
-    "Tests\\": "tests/"
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
   },
   "authors": [
     {
@@ -21,6 +23,7 @@
   },
   "require": {
     "illuminate/support": "^10.41",
-    "mashape/unirest-php": "^3.0"
+    "mashape/unirest-php": "^3.0",
+    "ext-pdo": "*"
   }
 }
