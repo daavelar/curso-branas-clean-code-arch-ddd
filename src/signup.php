@@ -24,7 +24,7 @@ function signup($input)
     if (!cpfIsValid($input['cpf'])) {
         return INVALID_CPF;
     }
-    if (!carPlateIsValid($input['carPlate'])) {
+    if (!is_null($input['carPlate']) && !carPlateIsValid($input['carPlate'])) {
         return INVALID_CAR_PLATE;
     }
 

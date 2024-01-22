@@ -69,6 +69,16 @@ class SignupTest extends BaseTestCase
         $this->assertEquals(['accountId' => $account['account_id']], $response);
     }
 
+    public function test_return_account_id_if_signup_of_passenger_is_completed()
+    {
+        $this->driverInput['isPassenger'] = true;
+        $this->driverInput['isDriver'] = false;
+        $this->driverInput['carPlate'] = null;
+        $response = $this->post('http://localhost:9501/signup', $this->driverInput);
+        $account = getAccount($response['accountId']);
+        $this->assertEquals(['accountId' => $account['account_id']], $response);
+    }
+
     public function test_return_error_code_if_car_plate_is_invalid()
     {
         unset($this->driverInput['id']);
